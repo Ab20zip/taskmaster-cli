@@ -52,7 +52,7 @@ jobs:
                 run: echo "PROJECT_NAME=${{steps.project_name.outputs.PROJECT_NAME}}" >> $GITHUB_ENV
 
             -   name: Build with Gradle
-                run: ./gradlew assemble publish --info
+                run: ./gradlew build --info
 
             -   name: Upload Build Results
                 uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
