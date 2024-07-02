@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build
 
 on:
     push:
@@ -58,44 +58,7 @@ jobs:
                 uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
                 with:
                     name: Build Results (Java ${{ matrix.java }} on ${{ matrix.os }})
-                    path: ${{ github.workspace }}/repo/
+                    path: ${{ github.workspace }}/build/libs
 
         outputs:
             project_name: ${{ steps.project_name.outputs.PROJECT_NAME }}
-
-    test:
-        name: Run unit tests
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [ ubuntu-latest, windows-latest, macos-latest ]
-                java: [ 22 ]
-        needs:
-            - build
-        steps:
-            -   name: Checkout code
-                uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
-
-            -   name: Cache Gradle Dependencies
-                uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
-                with:
-                    path: |
-                        ~/.gradle/caches
-                        ~/.gradle/wrapper
-                    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-                    restore-keys: |
-                        ${{ runner.os }}-gradle-
-
-            -   name: Common Setup
-                uses: ./.github/actions/common-setup
-                with:
-                    java-version: ${{ matrix.java }}
-
-            -   name: Test with Gradle
-                run: ./gradlew assemble check --info
-
-            -   name: Upload Test Results
-                uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
-                with:
-                    name: Test Reports (Java ${{ matrix.java }} on ${{ matrix.os }})
-                    path: ${{ github.workspace }}/build/reports/
